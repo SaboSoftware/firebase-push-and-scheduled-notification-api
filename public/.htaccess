@@ -1,0 +1,105 @@
+# PHP 8.1'i zorla
+<IfModule mime_module>
+    AddHandler application/x-httpd-php81 .php
+</IfModule>
+
+# Public dizinindeki .htaccess dosyası
+RewriteEngine On
+RewriteBase /
+
+# Cron dizinine erişime izin ver
+RewriteCond %{REQUEST_URI} ^/src/cron/ [NC]
+RewriteRule ^ - [L]
+
+# API istekleri için
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+
+# CORS ve Güvenlik Başlıkları
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Authorization, Content-Type, X-Requested-With, X-CSRF-Token"
+    Header always set Access-Control-Expose-Headers "*"
+    Header always set Access-Control-Max-Age "7200"
+    Header always set Access-Control-Allow-Credentials "true"
+
+    # Güvenlik başlıkları
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # OPTIONS isteklerine hızlı yanıt
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+</IfModule>
+
+# PHP ayarları
+<IfModule mod_php8.c>
+    php_flag display_errors Off
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+    php_value post_max_size 64M
+    php_value upload_max_filesize 64M
+    php_flag log_errors On
+    php_value error_log /home/saboproj/logs/php_errors.log
+</IfModule>
+
+# Sıkıştırma
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+</IfModule>
+
+# JSON MIME tipini ayarla
+AddType application/json .json
+
+# Dizin listelemeyi kapat
+Options -Indexes
+
+# Bazı dosya türlerini engelle
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "^(?i:composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|\.gitignore|\.env.*|phpunit\.xml|README\.md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Browser caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    
+    # CSS
+    ExpiresByType text/css "access plus 1 year"
+    
+    # JavaScript
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    
+    # Media files
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    
+    # Fonts
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule> 

@@ -1,0 +1,2 @@
+# Bu dosya, Git'in boş dizinleri izlemesini sağlar.
+# var/ dizini, runtime dosyaları için kullanılır (örn. cache, logs, vb.). 

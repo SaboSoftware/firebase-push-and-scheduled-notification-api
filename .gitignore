@@ -1,0 +1,39 @@
+# Composer
+/vendor/
+composer.phar
+
+# Firebase Credentials
+/config/firebase-credentials.json
+/config/firebase-*.json
+
+# IDE Files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+/var/*
+!/var/.gitkeep
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# System files
+.DS_Store
+Thumbs.db
+*.log
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Sensitive config files
+/config/app.php 

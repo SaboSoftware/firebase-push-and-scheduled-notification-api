@@ -1,0 +1,63 @@
+    # /home/saboproj/pengu.saboproje.com/.htaccess
+    # Ana dizindeki .htaccess dosyası - istekleri public dizinine yönlendirir
+
+    # PHP 8.1'i zorla
+    <IfModule mime_module>
+        AddHandler application/x-httpd-php81 .php
+    </IfModule>
+
+    # PHP CLI ayarları
+    <IfModule mod_php8.c>
+        php_value memory_limit 512M
+        php_value max_execution_time 600
+        php_value max_input_time 600
+        php_value post_max_size 64M
+        php_value upload_max_filesize 64M
+        php_flag log_errors On
+        php_value error_log /home/saboproj/logs/php_errors.log
+    </IfModule>
+
+    # Ana dizindeki .htaccess dosyası
+    RewriteEngine On
+    RewriteBase /
+
+    # www olmadan çalıştır
+    RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+    # HTTPS'e yönlendir
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Hassas dosyalara erişimi engelle
+    <FilesMatch "^(\.env|composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|\.gitignore|phpunit\.xml|README\.md)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # Gizli dosyalara erişimi engelle
+    <FilesMatch "^\.|\/\.">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # Dizin listelemeyi kapat
+    Options -Indexes
+
+    # CLI ve Cron işlemleri için src/cron dizinine erişime izin ver
+    <Directory "/home/saboproj/pengu.saboproje.com/src/cron">
+        Order allow,deny
+        Allow from all
+        Require all granted
+    </Directory>
+
+    # Tüm istekleri public klasörüne yönlendir (cron hariç)
+    RewriteCond %{REQUEST_URI} !^/src/cron/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # CLI ve Cron işlemleri için src, config ve vendor klasörlerine erişime izin ver
+    <If "%{REQUEST_URI} !~ m#^/(src|config|vendor)/#">
+        RewriteRule ^(src|config|vendor)/ - [F]
+    </If> 
