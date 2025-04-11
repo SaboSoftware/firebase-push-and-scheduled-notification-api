@@ -7,6 +7,7 @@ Bu belge, Firebase Notification API'sini cPanel hosting'de nasıl kurup yapılan
 1. Tüm dosyaları `public_html` klasörünün dışındaki bir dizine yükleyin (örneğin `firebase_backend`)
 2. `public` klasörünü `public_html` dizinine bir alt alan adı olarak konumlandırabilirsiniz
    (örneğin, `public_html/api.yourdomain.com`)
+3. Domains(etki alanları) kısmından yönet > new document root kısmından > sizindomain.com/public şeklinde yapmanız gerekebilir (bu ayarı kendinize göre düzenleyebilirsiniz.)
 
 ## PHP Sürümünü Ayarlama
 
@@ -25,10 +26,8 @@ cPanel'de PHP 8.1 veya daha yüksek sürüm kullanmanız gerekmektedir:
 
 ## Yapılandırma
 
-1. `config/firebase-credentials-example.json` dosyasını `config/firebase-credentials.json` olarak kopyalayın
-2. Firebase konsolundan indirdiğiniz servis hesabı anahtarınızı bu dosyaya yapıştırın
-3. `config/app.php` dosyasını düzenleyerek veritabanı ayarlarını yapılandırın:
-
+1. Firebase konsolundan indirdiğiniz servis hesabı anahtarınızı bu `config/firebase-credentials.json` dosyaya yapıştırın
+2. `config/app.php` dosyasını düzenleyerek veritabanı ayarlarını yapılandırın:
 ```php
 'database' => [
     'dsn' => 'mysql:host=localhost;dbname=YOUR_DB_NAME;charset=utf8mb4',
@@ -69,98 +68,12 @@ Uygulama, zamanlanmış bildirimler için cron kullanır. İlgili dizinlerin eri
 cPanel > Advanced > Cron Jobs menüsünden, aşağıdaki cron görevi ekleyin:
 
 ```
-*/5 * * * * cd /home/username/firebase_backend && php bin/console notifications:process-pending > /dev/null 2>&1
+ /opt/cpanel/ea-php81/root/usr/bin/php /home/saboproj/pengu.saboproje.com/src/cron/process_notifications.php >> /home/saboproj/logs/notifications.log 2>&1
 ```
 
-Bu görev, her 5 dakikada bir çalışacak ve zamanı gelen bildirimleri işleyecektir.
+Bu görev, her 5 dakikada bir çalışacak ve zamanı gelen bildirimleri işleyecektir. Tabiki bu ayarları sizler kendinize göre düzenleyebilirsiniz.
 
-### 2. Otomatik Cron Yönetimi
-
-Uygulamanın otomatik olarak cron görevleri oluşturabilmesi için iki yöntem vardır:
-
-#### A. Crontab Kullanımı (SSH erişimi varsa)
-
-1. SSH erişiminiz olduğundan emin olun
-2. Uygulamayı çalıştıran kullanıcıya crontab'ı değiştirme izni verin
-3. Kod içinde özelleştirme yapmaya gerek yok; mevcut kod çalışacaktır
-
-#### B. cPanel Cron API Kullanımı (SSH erişimi yoksa)
-
-cPanel API kullanarak cron görevi oluşturmak için aşağıdaki kodu `src/Services/ScheduledNotificationService.php` dosyasında `createCronJob` metoduna ekleyin:
-
-```php
-// cPanel API kullanarak cron görevi oluştur
-$cpanelUser = 'your_cpanel_username';
-$cpanelApiToken = 'your_cpanel_api_token';
-$domain = 'yourdomain.com';
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://{$domain}:2083/execute/Cron/add_line");
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: cpanel ' . $cpanelUser . ':' . $cpanelApiToken
-]);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-    'command' => $command,
-    'minute' => $minute,
-    'hour' => $hour,
-    'day' => $day,
-    'month' => $month,
-    'weekday' => '*'
-]));
-
-$response = curl_exec($ch);
-curl_close($ch);
-
-$result = json_decode($response, true);
-return !empty($result['data']);
-```
-
-Benzer şekilde, `removeCronJob` metodunu da cPanel API kullanacak şekilde değiştirin.
-
-## API Kullanımı
-
-Firebase bildirim API'si artık çalışır durumda! API'yi test etmek için:
-
-### Zamanlanmış Bildirim Oluşturma
-
-```
-POST /api/v1/scheduled-notifications/schedule
-```
-
-İstek gövdesi:
-```json
-{
-  "device_token": "cihaz_fcm_token_buraya",
-  "title": "Bildirim Başlığı",
-  "body": "Bildirim İçeriği",
-  "scheduled_time": "2023-10-15 14:30:00",
-  "data": {
-    "key1": "value1",
-    "key2": "value2"
-  }
-}
-```
-
-### Zamanlanmış Bildirimleri Listeleme
-
-```
-GET /api/v1/scheduled-notifications
-```
-
-İsteğe bağlı olarak, duruma göre filtreleme yapabilirsiniz:
-
-```
-GET /api/v1/scheduled-notifications?status=pending
-```
-
-### Zamanlanmış Bildirimi İptal Etme
-
-```
-DELETE /api/v1/scheduled-notifications/123
-```
-
-(123, bildirim ID'sidir)
+Ve işlem bu kadar artık apiniz hazır.
 
 ## Güvenlik Notları
 

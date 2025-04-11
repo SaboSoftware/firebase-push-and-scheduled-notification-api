@@ -1,7 +1,7 @@
-# Pengu Backend API Dökümantasyonu
+# Firebase Anlık Push ve Zamanlanmış Bildirim Backend API Dökümantasyonu
 
 ## Genel Bakış
-Pengu Backend, Firebase Cloud Messaging (FCM) kullanarak mobil uygulamalara anlık ve zamanlanmış bildirim gönderme işlemlerini yöneten bir REST API servisidir. Slim Framework 4.0 üzerine inşa edilmiş olup, PHP 8.1 ile çalışmaktadır.
+Firebase Backend, Firebase Cloud Messaging (FCM) kullanarak mobil uygulamalara anlık ve zamanlanmış bildirim gönderme işlemlerini yöneten bir REST API servisidir. Slim Framework 4.0 üzerine inşa edilmiş olup, PHP 8.1 ile çalışmaktadır.
 
 ## Özellikler
 - Anlık bildirim gönderme
@@ -66,11 +66,13 @@ return [
 ```
 
 ### 4. Cron Job Ayarları
-cPanel üzerinden aşağıdaki cron job'u ekleyin (her 30 dakikada bir çalışacak şekilde):
+cPanel üzerinden aşağıdaki cron job'u ekleyin (her 5 dakikada bir çalışacak şekilde) isterseniz kendi istediğiniz zaman diliminde de çalıştırabilirsiniz ihtiyacınıza göre:
 
 ```bash
-*/30 * * * * /opt/cpanel/ea-php81/root/usr/bin/php /home/saboproj/pengu.saboproje.com/src/cron/process_notifications.php >> /home/saboproj/logs/notifications.log 2>&1
+*/5 * * * * /opt/cpanel/ea-php81/root/usr/bin/php /home/sizinsunucu/sizindomain/src/cron/process_notifications.php >> /home/saboproj/logs/notifications.log 2>&1
 ```
+
+NOT: Bu cron linki benim sunucuma göredir siz kendi sunucunuza göre ayarlayabilirsiniz.
 
 ## API Endpoint'leri
 
