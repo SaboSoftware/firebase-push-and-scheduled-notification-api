@@ -20,6 +20,9 @@ Firebase Backend, Firebase Cloud Messaging (FCM) kullanarak mobil uygulamalara a
 
 ## Kurulum
 
+## 1. Config Dosyasını Düzenle
+config-set olan klasörün adını sadece 'config' yap
+
 ### 1. Composer Bağımlılıklarını Yükleme
 ```bash
 composer install
