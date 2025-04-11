@@ -68,7 +68,7 @@ Uygulama, zamanlanmış bildirimler için cron kullanır. İlgili dizinlerin eri
 cPanel > Advanced > Cron Jobs menüsünden, aşağıdaki cron görevi ekleyin:
 
 ```
- /opt/cpanel/ea-php81/root/usr/bin/php /home/saboproj/pengu.saboproje.com/src/cron/process_notifications.php >> /home/saboproj/logs/notifications.log 2>&1
+ /opt/cpanel/ea-php81/root/usr/bin/php /home/sizinsunucu/sizindomain/src/cron/process_notifications.php >> /home/sizinsunucu/logs/notifications.log 2>&1
 ```
 
 Bu görev, her 5 dakikada bir çalışacak ve zamanı gelen bildirimleri işleyecektir. Tabiki bu ayarları sizler kendinize göre düzenleyebilirsiniz.

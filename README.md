@@ -72,7 +72,7 @@ return [
 cPanel üzerinden aşağıdaki cron job'u ekleyin (her 5 dakikada bir çalışacak şekilde) isterseniz kendi istediğiniz zaman diliminde de çalıştırabilirsiniz ihtiyacınıza göre:
 
 ```bash
-*/5 * * * * /opt/cpanel/ea-php81/root/usr/bin/php /home/sizinsunucu/sizindomain/src/cron/process_notifications.php >> /home/saboproj/logs/notifications.log 2>&1
+*/5 * * * * /opt/cpanel/ea-php81/root/usr/bin/php /home/sizinsunucu/sizindomain/src/cron/process_notifications.php >> /home/sizinsunucu/logs/notifications.log 2>&1
 ```
 
 NOT: Bu cron linki benim sunucuma göredir siz kendi sunucunuza göre ayarlayabilirsiniz.
